@@ -15,7 +15,8 @@ const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const innermostCard = (match: (heading: string) => boolean) =>
   cy.get(".tactical-card").filter((_, el) =>
     el.querySelector(".tactical-card") === null &&
-    [...el.querySelectorAll("h2, h3, h4")].some((h) => match((h.textContent ?? "").trim())));
+    // Espacios normalizados: el título de un bloqueado sale "Nombre  [BLOQUEADO]" (dos espacios).
+    [...el.querySelectorAll("h2, h3, h4")].some((h) => match((h.textContent ?? "").replace(/\s+/g, " ").trim())));
 
 /** Ficha de jugador: el título lleva " [BLOQUEADO]" o " (Tú)" según el caso. */
 export const playerCard = (nickname: string) => {
