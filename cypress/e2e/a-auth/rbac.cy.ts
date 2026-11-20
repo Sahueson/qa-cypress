@@ -1,4 +1,4 @@
-import { exactly } from "../../support/e2e";
+import { exactly } from "../../support/utils";
 
 // Suite A · Visibilidad por rol (RBAC): lo que impone el RLS del staging, visto en la interfaz.
 // Mismos casos que qa-playwright/tests/a-auth/rbac.spec.ts. Se comprueba qué se ve y qué no, sin

@@ -1,4 +1,4 @@
-import { exactly } from "../../support/e2e";
+import { exactly } from "../../support/utils";
 
 // Suite A · Autenticación y perfiles. Mismos casos que qa-playwright/tests/a-auth/auth.spec.ts.
 
