@@ -10,5 +10,12 @@ suites=$(printf %s "${SUITE:?Falta SUITE}" | tr -cd 'a-z0-9,-')
 specs=""
 IFS=',' read -ra list <<< "$suites"
 for s in "${list[@]}"; do [ -n "$s" ] && specs="${specs:+$specs,}cypress/e2e/$s/**/*.cy.ts"; done
-rm -rf evidence cypress/screenshots result.json
-exec node shared/reset-staging/with-staging.js -- npx cypress run --spec "$specs"
+rm -rf evidence cypress/screenshots result.json report
+# Informe HTML nativo (mochawesome): no lleva comandos ni contraseñas; aun así se pasa por mask-report.js antes de publicarse.
+code=0
+node shared/reset-staging/with-staging.js -- npx cypress run --spec "$specs"   --reporter mochawesome --reporter-options "reportDir=report/.jsons,overwrite=false,html=false,json=true" || code=$?
+if ls report/.jsons/*.json >/dev/null 2>&1; then
+  npx mochawesome-merge "report/.jsons/*.json" > report/merged.json     && npx marge report/merged.json -f index -o report --inline --reportTitle "Informe de Cypress" --reportPageTitle "Informe de Cypress" || true
+  rm -rf report/.jsons report/merged.json
+fi
+exit $code
