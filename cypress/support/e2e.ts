@@ -1,6 +1,8 @@
 // Comandos comunes de los tests de Cypress (equivalentes al page object de qa-playwright).
 // La app solo tiene data-testid en el login QA; el resto se localiza por texto visible.
 
+import "allure-cypress"; // pasos y capturas para el informe de Allure
+
 type QaUser = { key: string; email: string; nickname: string };
 
 import { exactly, slug } from "./utils";

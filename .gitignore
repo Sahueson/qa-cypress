@@ -7,3 +7,4 @@ evidence/
 cypress/screenshots/
 cypress/videos/
 report
+allure-results/

@@ -3,6 +3,9 @@ import * as fs from "fs";
 import * as path from "path";
 import { PNG } from "pngjs";
 import * as jpeg from "jpeg-js";
+// require: el tsconfig (moduleResolution node10) no resuelve los "exports" de allure-cypress.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { allureCypress } = require("allure-cypress/reporter") as { allureCypress: (on: any, config: any, options?: any) => void };
 
 // Cypress contra Tactical Calendar (staging). Mismos casos y nombres que qa-playwright y
 // qa-selenium. Una carpeta por suite: cypress/e2e/<suite>/*.cy.ts.
@@ -30,6 +33,35 @@ const redact = (s: string) => {
   return pwd ? s.split(pwd).join("***") : s;
 };
 
+/**
+ * Cypress solo admite UN manejador por evento (el último pisa al anterior) y allure-cypress usa los
+ * mismos que nosotros (after:run, after:screenshot, task). Este envoltorio los encadena.
+ */
+function chainEvents(on: Cypress.PluginEvents): Cypress.PluginEvents {
+  const handlers: Record<string, Function[]> = {};
+  const tasks: Record<string, Function> = {};
+  return ((event: string, handler: any) => {
+    if (event === "task") {
+      const first = Object.keys(tasks).length === 0;
+      Object.assign(tasks, handler);
+      if (first) (on as any)("task", tasks);
+      return;
+    }
+    if (!handlers[event]) {
+      handlers[event] = [];
+      (on as any)(event, async (...args: any[]) => {
+        let out: any;
+        for (const h of handlers[event]) {
+          const r = await h(...args);
+          if (r && typeof r === "object") out = { ...out, ...r };
+        }
+        return out;
+      });
+    }
+    handlers[event].push(handler);
+  }) as any;
+}
+
 export default defineConfig({
   video: false,
   screenshotOnRunFailure: false, // la captura la hace afterEach, pase o falle
@@ -49,7 +81,10 @@ export default defineConfig({
     expose: {
       grep: process.env.GREP ?? "",
     },
-    setupNodeEvents(on) {
+    setupNodeEvents(rawOn, config) {
+      const on = chainEvents(rawOn);
+      // Informe de Allure: pasos de cada test y capturas. Los resultados se leen luego con `allure generate`.
+      allureCypress(on, config, { resultsDir: "allure-results" });
       const startedAt = new Date();
       const roles = new Map<string, string>();
       const evidence = new Map<string, string>();
@@ -117,6 +152,7 @@ export default defineConfig({
           tests,
         }, null, 2));
       });
+      return config;
     },
   },
 });
