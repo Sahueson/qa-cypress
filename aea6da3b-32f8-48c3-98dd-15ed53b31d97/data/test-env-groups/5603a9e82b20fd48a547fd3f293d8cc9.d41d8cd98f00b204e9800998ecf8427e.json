@@ -1,0 +1,1 @@
+{"id":"5603a9e82b20fd48a547fd3f293d8cc9.d41d8cd98f00b204e9800998ecf8427e","fullName":"qa-cypress:cypress/e2e/a-auth/rbac.cy.ts#Suite A · Visibilidad por rol TC-A06 Jugador MAD solo ve partidas MAD y no tiene pestaña FOE","name":"TC-A06 Jugador MAD solo ve partidas MAD y no tiene pestaña FOE","status":"passed","testResultsByEnv":{"default":"34d208a88927e0c97e68fecf141a26b5"}}

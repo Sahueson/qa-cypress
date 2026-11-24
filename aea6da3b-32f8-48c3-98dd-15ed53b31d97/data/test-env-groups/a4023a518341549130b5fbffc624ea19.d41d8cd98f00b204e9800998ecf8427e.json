@@ -1,0 +1,1 @@
+{"id":"a4023a518341549130b5fbffc624ea19.d41d8cd98f00b204e9800998ecf8427e","fullName":"qa-cypress:cypress/e2e/j-demo-fallos/demo-fallos.cy.ts#Suite J · Demo de fallos (fallan a propósito) TC-J04 El jugador sin equipo puede crear partidas","name":"TC-J04 El jugador sin equipo puede crear partidas","status":"failed","testResultsByEnv":{"default":"6f876b27ebf8a48e3083429606b4cd65"}}
