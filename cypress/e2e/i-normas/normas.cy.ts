@@ -112,7 +112,7 @@ describe("Suite I · Normas del equipo", () => {
     cy.loginAs("player_mad");
     cy.openTab("Normas");
     cy.contains("Todavía no hay estatutos o normativa publicados para MAD Irregulars.").should("be.visible");
-    cy.get("#doc-squad-select").should("not.exist");
+    cy.get('[data-testid="docs-squad-select"]').should("not.exist");
     cy.contains(title).should("not.exist");
   });
 });

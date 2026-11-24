@@ -1,4 +1,4 @@
-import { inDays } from "../../support/app";
+import { dropdownOptions, inDays } from "../../support/app";
 import { exactly } from "../../support/utils";
 
 // Suite H · Calendario: fechas de vacaciones / "No se juega" (team_blackouts). Mismos casos que
@@ -55,14 +55,13 @@ describe("Suite H · Calendario y fechas sin partida", () => {
   it("TC-H03 Un admin de un solo equipo no puede marcar fechas para ambos", () => {
     cy.loginAs("admin_mad");
     openForm();
-    cy.get(`${FORM} select option`).then(($o) => expect([...$o].map((o) => o.textContent)).to.deep.equal(["MAD Irregulars"]));
+    dropdownOptions(`${FORM} [data-testid="blackout-squad-select"]`).should("deep.equal", ["MAD Irregulars"]);
   });
 
   it("TC-H04 El super admin puede marcar fechas para ambos equipos", () => {
     cy.loginAs("superadmin");
     openForm();
-    cy.get(`${FORM} select option`).then(($o) =>
-      expect([...$o].map((o) => o.textContent)).to.deep.equal(["MAD Irregulars", "FOE", "Ambos equipos (MAD Irregulars y FOE)"]));
+    dropdownOptions(`${FORM} [data-testid="blackout-squad-select"]`).should("deep.equal", ["MAD Irregulars", "FOE", "Ambos equipos (MAD Irregulars y FOE)"]);
     // Y ve las fechas de los dos equipos.
     blackoutRow("QA · Sin partida FOE").should("be.visible");
     blackoutRow("QA · Sin partida MAD").should("be.visible");

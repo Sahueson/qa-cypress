@@ -9,7 +9,7 @@ describe("Suite C · Inscripciones", () => {
     // junta2 tiene Árido en su ficha; la partida recomienda Tiger Stripe.
     cy.loginAs("junta2");
     cy.openEvent("QA FOE · Inscripción abierta");
-    registrationSelect(0).should("have.value", "Tiger Stripe");
+    registrationSelect(0).should("contain.text", "Tiger Stripe");
     modalText("No tienes «Tiger Stripe» marcada en tu ficha").should("be.visible");
 
     modalButton("Apuntarse").click();
@@ -22,8 +22,8 @@ describe("Suite C · Inscripciones", () => {
   it("TC-C07 Sin equipación en la partida se preselecciona la de la ficha del jugador", () => {
     cy.loginAs("junta2"); // ficha: Árido + Médico
     cy.openEvent("QA FOE · MilSim próxima"); // sin equipación recomendada
-    registrationSelect(0).should("have.value", "Árido");
-    registrationSelect(1).should("have.value", "medico");
+    registrationSelect(0).should("contain.text", "Árido");
+    registrationSelect(1).should("contain.text", "Médico");
     cy.get(MODAL).contains(/No tienes «.*» marcada/).should("not.exist");
   });
 

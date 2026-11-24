@@ -1,4 +1,4 @@
-import { openFoeSection, pollCard } from "../../support/app";
+import { chooseOption, openFoeSection, pollCard } from "../../support/app";
 import { exactly } from "../../support/utils";
 
 // Suite E · Gobernanza y régimen disciplinario FOE. Mismos casos que qa-playwright/tests/e-gobernanza.
@@ -19,10 +19,9 @@ describe("Suite E · Gobernanza FOE", () => {
     cy.contains("button", exactly("+ Nueva votación")).click();
 
     const form = "form:contains('Convocar votación en Junta Directiva')";
-    const select = (option: string) => cy.get(`${form} select`).filter(`:has(option:contains("${option}"))`);
-    select("Votación de sanción a operador").select("Votación de sanción a operador");
-    select("QA Jugador FOE").select("QA Jugador FOE");
-    select("Falta Grave").select("grave");
+    chooseOption(`${form} [data-testid="foe-poll-topic-select"]`, "Votación de sanción a operador");
+    chooseOption(`${form} [data-testid="foe-sanction-target-select"]`, "QA Jugador FOE");
+    chooseOption(`${form} [data-testid="foe-sanction-severity-select"]`, "Falta Grave");
     cy.get(`${form} [placeholder*="Art. 51.i"]`).type("Art. 36.2 — Baja < 48h");
     cy.get(`${form} [placeholder*="Explica los hechos"]`).type("Baja sin aviso en la partida del domingo (E2E).");
     cy.get(form).contains("button", exactly("Publicar votación")).click();

@@ -1,12 +1,13 @@
-import { cardButton, playerCard } from "../../support/app";
+import { cardButton, chooseOption, playerCard } from "../../support/app";
 import { exactly } from "../../support/utils";
 
 // Suite G · Gestión de jugadores. Solo el super admin cambia rol, bloqueo, equipos y órganos FOE; el
 // efecto se comprueba entrando con el jugador afectado. Mismos casos que qa-playwright/tests/g-jugadores.
 
 const NAV = 'nav[aria-label="Navegación principal"]';
-const ROLE_SELECT = 'select:has(option[value="super_admin"])';
-const ADD_SQUAD_SELECT = 'select:has(option:contains("+ Añadir otro equipo"))';
+// Desplegables de la ficha: su aria-label lleva el nombre del jugador, así que se localizan por data-testid.
+const ROLE_SELECT = '[data-testid^="roster-app-role-select-"]';
+const ADD_SQUAD_SELECT = '[data-testid^="roster-add-squad-select-"]';
 
 describe("Suite G · Gestión de jugadores", () => {
   before(() => cy.task("resetStaging"));
@@ -14,7 +15,7 @@ describe("Suite G · Gestión de jugadores", () => {
   it("TC-G01 El super admin asciende a un jugador a admin y este gestiona partidas", () => {
     cy.loginAs("superadmin");
     cy.openTab("Jugadores");
-    playerCard("QA Jugador MAD").find(ROLE_SELECT).select("admin");
+    chooseOption(playerCard("QA Jugador MAD").find(ROLE_SELECT), "Admin (Partidas)");
     cy.expectToast("Ficha actualizada para QA Jugador MAD.");
 
     cy.loginAs("player_mad");
@@ -40,7 +41,7 @@ describe("Suite G · Gestión de jugadores", () => {
     cy.loginAs("superadmin");
     cy.openTab("Jugadores");
     playerCard("QA Sin Equipo").contains(exactly("Sin equipo asignado")).should("be.visible");
-    playerCard("QA Sin Equipo").find(ADD_SQUAD_SELECT).select("FOE");
+    chooseOption(playerCard("QA Sin Equipo").find(ADD_SQUAD_SELECT), "FOE");
     cy.expectToast("Ficha actualizada para QA Sin Equipo.");
     playerCard("QA Sin Equipo").find('[title="Quitar de FOE"]').should("be.visible");
 

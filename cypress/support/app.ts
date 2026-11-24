@@ -45,7 +45,26 @@ export const openFoeSection = (label: string) => {
 };
 
 /** Formulario de inscripción del detalle de partida: equipación y rol. */
-export const registrationSelect = (index: 0 | 1) => cy.get(`${MODAL} .inscribir-form select`).eq(index);
+export const registrationSelect = (index: 0 | 1) =>
+  cy.get(`${MODAL} [data-testid="${index === 0 ? "event-register-team-select" : "event-register-role-select"}"]`);
+
+const LISTBOX_OPTIONS = 'ul[role="listbox"] li[role="option"]';
+
+/** Desplegable propio (TacticalSelect): se abre y se elige la opción por su texto. `trigger` es un selector CSS (data-testid). */
+export const chooseOption = (trigger: string | Cypress.Chainable<JQuery>, option: string) => {
+  (typeof trigger === "string" ? cy.get(trigger) : trigger).click();
+  cy.get(LISTBOX_OPTIONS).contains("button", option).click();
+};
+
+/** Textos de las opciones de un desplegable propio: lo abre, los lee y lo cierra sin elegir. */
+export const dropdownOptions = (trigger: string) => {
+  cy.get(trigger).click();
+  return cy.get(LISTBOX_OPTIONS).then(($o) => {
+    const texts = [...$o].map((o) => (o.textContent ?? "").trim());
+    cy.get(trigger).click();
+    return cy.wrap(texts);
+  });
+};
 
 /** Fecha local YYYY-MM-DD dentro de `days` días (como <input type="date">). */
 export const inDays = (days: number) => {
