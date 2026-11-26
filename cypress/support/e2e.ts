@@ -113,14 +113,29 @@ const filteredOut = () => {
   const grep = Cypress.expose("grep") as string | undefined;
   return !!grep && !new RegExp(grep).test(Cypress.currentTest.title);
 };
+// Pantalla en vivo de la web: total de tests de este spec (los que pasan el filtro; la web suma
+// los de todos los specs), inicio y resultado de cada test.
+const live = (type: string, message: string) => cy.task("liveEvent", { type, message }, { log: false });
+before(function () {
+  const grep = Cypress.expose("grep") as string | undefined;
+  const count = (suite: any): number =>
+    (suite.tests as any[]).filter((t) => !grep || new RegExp(grep).test(t.title)).length +
+    (suite.suites as any[]).reduce((n, s) => n + count(s), 0);
+  live("plan", String(count((Cypress as any).mocha.getRootSuite())));
+});
+
 beforeEach(function () {
   if (filteredOut()) this.skip();
+  live("test_started", Cypress.currentTest.title);
 });
 
 // Captura al final de cada test (pase o falle): es la única evidencia que se publica. El
 // config la convierte a JPEG (after:screenshot) y la enlaza en result.json por su nombre.
-afterEach(() => {
+afterEach(function () {
   if (filteredOut()) return; // omitido por el filtro: sin captura
+  const t: any = this.currentTest;
+  live(t?.state === "failed" ? "test_failed" : t?.state === "pending" ? "test_skipped" : "test_passed", Cypress.currentTest.title);
+  if (t?.state === "failed" && t.err?.message) live("log", `   ↳ ${String(t.err.message).split(String.fromCharCode(10))[0]}`);
   cy.screenshot(slug(Cypress.currentTest.title), { capture: "viewport", log: false });
 });
 

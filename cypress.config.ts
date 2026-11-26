@@ -14,6 +14,9 @@ const { allureCypress } = require("allure-cypress/reporter") as { allureCypress:
 // test. Nunca vídeos ni logs: podrían llevar la contraseña QA.
 
 const SHARED = path.resolve(__dirname, "shared");
+// Eventos para la pantalla en vivo de la web (no hacen nada sin RUN_ID).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const live = require(path.join(SHARED, "live-events.js"));
 const EVIDENCE_DIR = path.resolve(__dirname, "evidence");
 
 type TestResult = {
@@ -102,6 +105,11 @@ export default defineConfig({
           await reset({ log: () => {} });
           return null;
         },
+        /** Evento para la pantalla en vivo de la web. En cola y sin esperar: no frena el test. */
+        liveEvent({ type, message }: { type: string; message: string }) {
+          live.emit(type, message);
+          return null;
+        },
         /** Rol con el que corre el test (columna "role" de la web): el primer usuario que entra. */
         setRole({ test, role }: { test: string; role: string }) {
           if (!roles.has(test)) roles.set(test, role);
@@ -152,6 +160,8 @@ export default defineConfig({
           tests,
         }, null, 2));
       });
+      // Registrado después del que escribe result.json: se ejecutan en este orden.
+      on("after:run", async () => { await live.flush(); });
       return config;
     },
   },
