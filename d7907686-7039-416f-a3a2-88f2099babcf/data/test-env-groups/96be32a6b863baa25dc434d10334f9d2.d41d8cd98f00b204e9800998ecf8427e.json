@@ -1,0 +1,1 @@
+{"id":"96be32a6b863baa25dc434d10334f9d2.d41d8cd98f00b204e9800998ecf8427e","fullName":"qa-cypress:cypress/e2e/a-auth/auth.cy.ts#Suite A · Autenticación TC-A05 Cerrar sesión vuelve a la pantalla de login","name":"TC-A05 Cerrar sesión vuelve a la pantalla de login","status":"passed","testResultsByEnv":{"default":"c8509a4753105e3cd6ed97146f15ad13"}}
